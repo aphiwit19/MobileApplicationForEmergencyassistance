@@ -37,7 +37,7 @@ class ContactsScreen extends StatelessWidget {
         backgroundColor: const Color.fromRGBO(230, 70, 70, 1),
         elevation: 0,
       ),
-      backgroundColor: Colors.grey[200], // เปลี่ยนสีพื้นหลังที่นี่
+      backgroundColor: Colors.grey[200],
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
@@ -76,7 +76,7 @@ class ContactsScreen extends StatelessWidget {
                 contacts[index].data() as Map<String, dynamic>,
               );
               return Card(
-                color: Colors.white, // เปลี่ยนสีพื้นหลังของกรอบผู้ติดต่อที่นี่
+                color: Colors.white,
                 elevation: 3,
                 margin: const EdgeInsets.only(bottom: 12),
                 shape: RoundedRectangleBorder(
@@ -122,17 +122,6 @@ class ContactsScreen extends StatelessWidget {
                           .collection('contacts')
                           .doc(contacts[index].id)
                           .delete();
-                      // ScaffoldMessenger.of(context).showSnackBar(
-                      //   SnackBar(
-                      //     content: const Text('ลบผู้ติดต่อสำเร็จ'),
-                      //     backgroundColor: Colors.green,
-                      //     behavior: SnackBarBehavior.floating,
-                      //     shape: RoundedRectangleBorder(
-                      //       borderRadius: BorderRadius.circular(8),
-                      //     ),
-                      //     margin: const EdgeInsets.all(16),
-                      //   ),
-                      // );
                     },
                   ),
                 ),
@@ -142,7 +131,7 @@ class ContactsScreen extends StatelessWidget {
         },
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 3,
+        currentIndex: 2,
         onTap: (index) {},
       ),
       floatingActionButton: FloatingActionButton(

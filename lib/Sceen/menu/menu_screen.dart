@@ -27,7 +27,7 @@ class MenuScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 2, // MenuScreen อยู่ที่ index 2
+        currentIndex: 1, // MenuScreen อยู่ที่ index 2
         onTap: (index) {},
       ),
     );

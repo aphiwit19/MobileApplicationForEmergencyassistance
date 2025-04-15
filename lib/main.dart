@@ -1,4 +1,3 @@
-import 'package:ballauto/Sceen/chats/chat_screen.dart';
 import 'package:ballauto/Sceen/home/home.dart';
 import 'package:ballauto/Sceen/menu/menu_screen.dart';
 import 'package:ballauto/Sceen/profile/profile_screen.dart';
@@ -7,7 +6,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Sceen/auth/login_screen.dart';
 import 'Sceen/contact/contacts_screen.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,7 +36,6 @@ class MyApp extends StatelessWidget {
               },
             ),
         '/home': (context) => const Home(),
-        '/chat': (context) => const ChatScreen(),
         '/menu': (context) => const MenuScreen(),
         '/contacts': (context) => const ContactsScreen(),
         '/profile': (context) => const ProfileScreen(),

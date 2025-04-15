@@ -243,7 +243,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         },
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 4,
+        currentIndex: 3,
         onTap: (index) {},
       ),
     );

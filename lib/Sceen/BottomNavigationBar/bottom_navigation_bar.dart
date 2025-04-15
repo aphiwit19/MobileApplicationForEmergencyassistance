@@ -15,7 +15,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
   void _navigateToPage(BuildContext context, int index) {
     final routes = [
       '/home',
-      '/chat',
+      
       '/menu',
       '/contacts',
       '/profile',
@@ -39,10 +39,6 @@ class CustomBottomNavigationBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'หน้าแรก',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble),
-          label: 'แชท',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.dashboard),
