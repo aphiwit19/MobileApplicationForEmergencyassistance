@@ -91,13 +91,28 @@ class _FormProfileScreenState extends State<FormProfileScreen> {
       keyboardType: inputType,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(color: Colors.grey[600]),
         hintText: hintText,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color.fromRGBO(230, 70, 70, 1),
+            width: 2,
+          ),
+        ),
         filled: true,
-        fillColor: Colors.white, // ช่องกรอกเป็นสีขาว
+        fillColor: Colors.grey[50], // ช่องกรอกข้อมูลเป็นสีเทาอ่อน
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
-          vertical: 16,
+          vertical: 14,
         ),
         errorStyle: const TextStyle(fontSize: 12),
       ),
@@ -187,7 +202,7 @@ class _FormProfileScreenState extends State<FormProfileScreen> {
                 _buildInput(
                   label: 'เบอร์โทรศัพท์',
                   controller: _phoneController,
-                  
+
                   inputType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -221,14 +236,9 @@ class _FormProfileScreenState extends State<FormProfileScreen> {
                 _buildInput(
                   label: 'โรคประจำตัว',
                   controller: _diseaseController,
-                  
                 ),
                 const SizedBox(height: 16),
-                _buildInput(
-                  label: 'การแพ้ยา',
-                  controller: _allergyController,
-                  
-                ),
+                _buildInput(label: 'การแพ้ยา', controller: _allergyController),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _saveProfile,

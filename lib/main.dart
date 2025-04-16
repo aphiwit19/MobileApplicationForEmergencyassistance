@@ -1,6 +1,7 @@
 import 'package:ballauto/Sceen/home/home.dart';
 import 'package:ballauto/Sceen/menu/menu_screen.dart';
 import 'package:ballauto/Sceen/profile/profile_screen.dart';
+import 'package:ballauto/Sceen/profile/history_sos_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,14 +23,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/':
-            (context) => StreamBuilder<User?>(
+        '/': (context) => StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasData) {
-                  return const Home(); // ไปที่หน้า Home แทน MainLayout
+                  return const Home();
                 } else {
                   return const LoginScreen();
                 }
@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
         '/menu': (context) => const MenuScreen(),
         '/contacts': (context) => const ContactsScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/history_sos': (context) => const HistorySosScreen(),
         '/login': (context) => const LoginScreen(),
       },
     );

@@ -14,6 +14,15 @@ class ContactService {
         throw Exception('กรุณาล็อกอินก่อน');
       }
 
+      // ตรวจสอบจำนวนผู้ติดต่อที่มีอยู่
+      final contactsSnapshot = await _userCollection
+          .doc(user.uid)
+          .collection('contacts')
+          .get();
+      if (contactsSnapshot.docs.length >= 5) {
+        throw Exception('ไม่สามารถเพิ่มผู้ติดต่อได้ เกินจำนวนสูงสุด 5 รายชื่อ');
+      }
+
       // สร้าง Contact object
       final contact = Contact(
         name: name,
@@ -72,6 +81,24 @@ class ContactService {
           .delete();
     } catch (e) {
       throw Exception('เกิดข้อผิดพลาดในการลบผู้ติดต่อ: $e');
+    }
+  }
+
+  // แก้ไขชื่อผู้ติดต่อ
+  Future<void> updateContactName(String contactId, String newName) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('กรุณาล็อกอินก่อน');
+      }
+
+      await _userCollection
+          .doc(user.uid)
+          .collection('contacts')
+          .doc(contactId)
+          .update({'name': newName});
+    } catch (e) {
+      throw Exception('เกิดข้อผิดพลาดในการแก้ไขชื่อผู้ติดต่อ: $e');
     }
   }
 }

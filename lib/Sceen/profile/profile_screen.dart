@@ -81,7 +81,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                
                                 IconButton(
                                   icon: const Icon(
                                     Icons.edit,
@@ -91,10 +90,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder:
-                                            (context) => EditProfileScreen(
-                                              userProfile: userData,
-                                            ),
+                                        builder: (context) => EditProfileScreen(
+                                          userProfile: userData,
+                                        ),
                                       ),
                                     );
                                   },
@@ -102,8 +100,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ],
                             ),
                             const SizedBox(height: 8),
-
-                            /// 👇 แสดงข้อมูลแบบไม่ใช้ฟังก์ชัน
                             ListTile(
                               contentPadding: EdgeInsets.zero,
                               leading: Icon(
@@ -198,8 +194,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/history_sos');
+                      },
+                      icon: const Icon(Icons.history, color: Colors.white),
+                      label: const Text(
+                        'ประวัติการแจ้งเหตุ',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(230, 70, 70, 1),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                          horizontal: 24,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: () async {
                         try {

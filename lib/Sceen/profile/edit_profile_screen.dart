@@ -13,7 +13,7 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Controllers
   late TextEditingController _nameController;
   late TextEditingController _phoneController;
@@ -33,8 +33,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.userProfile.name);
     _phoneController = TextEditingController(text: widget.userProfile.phone);
-    _diseaseController = TextEditingController(text: widget.userProfile.disease);
-    _allergyController = TextEditingController(text: widget.userProfile.allergy);
+    _diseaseController = TextEditingController(
+      text: widget.userProfile.disease,
+    );
+    _allergyController = TextEditingController(
+      text: widget.userProfile.allergy,
+    );
     _selectedGender = widget.userProfile.gender;
     _selectedBloodType = widget.userProfile.bloodType;
   }
@@ -64,7 +68,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
 
         await _userService.saveUserProfile(updatedProfile);
-        
+
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -100,13 +104,29 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       keyboardType: inputType,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(color: Colors.grey[600]),
         hintText: hintText,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color.fromRGBO(230, 70, 70, 1),
+            width: 2,
+          ),
         ),
         filled: true,
-       fillColor: Colors.white, // เปลี่ยนเป็นสีขาว
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        fillColor: Colors.grey[50], // ช่องกรอกข้อมูลเป็นสีเทาอ่อน
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         errorStyle: const TextStyle(fontSize: 12),
       ),
       validator: validator,
@@ -127,17 +147,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       value: value,
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: TextStyle(color: Colors.grey[600]),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(width: 1.5),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Color.fromRGBO(230, 70, 70, 1),
+            width: 2,
+          ),
         ),
         filled: true,
-        fillColor: Colors.white, // เปลี่ยนเป็นสีขาว
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        fillColor: Colors.grey[50], // เปลี่ยนเป็นสีเทาอ่อน
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
       ),
-      items: items.map((item) => DropdownMenuItem(
-        value: item,
-        child: Text(item, style: const TextStyle(fontSize: 16)),
-      )).toList(),
+      items:
+          items
+              .map(
+                (item) => DropdownMenuItem(
+                  value: item,
+                  child: Text(item, style: const TextStyle(fontSize: 16)),
+                ),
+              )
+              .toList(),
       onChanged: onChanged,
       validator: validator,
       dropdownColor: Colors.white,
@@ -149,7 +190,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('แก้ไขข้อมูลส่วนตัว',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+        title: const Text(
+          'แก้ไขข้อมูลส่วนตัว',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
         backgroundColor: Color.fromRGBO(230, 70, 70, 1),
         elevation: 0,
@@ -174,17 +218,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 16),
                 _buildInput(
                   label: 'ชื่อ-นามสกุล',
+
                   controller: _nameController,
                   hintText: 'กรอกชื่อ-นามสกุล',
-                  validator: (value) => value == null || value.isEmpty
-                      ? 'กรุณากรอกชื่อ'
-                      : null,
+                  validator:
+                      (value) =>
+                          value == null || value.isEmpty
+                              ? 'กรุณากรอกชื่อ'
+                              : null,
                 ),
                 const SizedBox(height: 16),
                 _buildInput(
                   label: 'เบอร์โทรศัพท์',
                   controller: _phoneController,
-                  
+
                   inputType: TextInputType.phone,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -209,21 +256,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   label: 'หมู่เลือด',
                   value: _selectedBloodType,
                   items: _bloodTypes,
-                  onChanged: (value) => setState(() => _selectedBloodType = value),
-                  validator: (value) => value == null ? 'กรุณาเลือกหมู่เลือด' : null,
+                  onChanged:
+                      (value) => setState(() => _selectedBloodType = value),
+                  validator:
+                      (value) => value == null ? 'กรุณาเลือกหมู่เลือด' : null,
                 ),
                 const SizedBox(height: 16),
                 _buildInput(
                   label: 'โรคประจำตัว',
                   controller: _diseaseController,
-                  
                 ),
                 const SizedBox(height: 16),
-                _buildInput(
-                  label: 'การแพ้ยา',
-                  controller: _allergyController,
-                  
-                ),
+                _buildInput(label: 'การแพ้ยา', controller: _allergyController),
                 const SizedBox(height: 32),
                 ElevatedButton(
                   onPressed: _saveProfile,

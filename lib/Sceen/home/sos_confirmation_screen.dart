@@ -1,7 +1,10 @@
 import 'package:ballauto/services/contact_service.dart';
 import 'package:ballauto/services/sms_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:ballauto/model/sos_history.dart';
 
 class SosConfirmationScreen extends StatefulWidget {
   const SosConfirmationScreen({super.key});
@@ -16,6 +19,8 @@ class _SosConfirmationScreenState extends State<SosConfirmationScreen> {
   bool _isLoading = false;
   final ContactService _contactService = ContactService();
   final SmsService _smsService = SmsService();
+  final CollectionReference _userCollection =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -64,7 +69,24 @@ class _SosConfirmationScreenState extends State<SosConfirmationScreen> {
 
           // ส่ง SMS
           final phoneNumbers = contacts.map((contact) => contact.phone).toList();
-          await _smsService.sendSms(phoneNumbers, "สวัดดีจาากแอพsos");
+          const message = "สวัดดีจากแอพsos";
+          await _smsService.sendSms(phoneNumbers, message);
+
+          // บันทึกประวัติการแจ้งเหตุลง Firestore
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            final sosHistory = SosHistory(
+              timestamp: DateTime.now(),
+              phoneNumbers: phoneNumbers, // บันทึก List ของเบอร์
+              status: 'success',
+              message: message,
+            );
+            await _userCollection
+                .doc(user.uid)
+                .collection('sos_history')
+                .add(sosHistory.toMap());
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('ส่ง SMS เรียบร้อยแล้ว'),
@@ -72,6 +94,21 @@ class _SosConfirmationScreenState extends State<SosConfirmationScreen> {
             ),
           );
         } catch (e) {
+          // บันทึกประวัติเมื่อเกิดข้อผิดพลาด
+          final user = FirebaseAuth.instance.currentUser;
+          if (user != null) {
+            final sosHistory = SosHistory(
+              timestamp: DateTime.now(),
+              phoneNumbers: [], // ไม่มีเบอร์เมื่อล้มเหลว
+              status: 'failed',
+              message: 'สวัดดีจากแอพsos',
+            );
+            await _userCollection
+                .doc(user.uid)
+                .collection('sos_history')
+                .add(sosHistory.toMap());
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('เกิดข้อผิดพลาดในการส่ง SMS: $e'),

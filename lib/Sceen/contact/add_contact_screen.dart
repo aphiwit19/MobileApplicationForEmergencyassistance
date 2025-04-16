@@ -24,10 +24,18 @@ class _AddContactScreenState extends State<AddContactScreen> {
         await _contactService.addContact(name, phone);
         Navigator.pop(context);
       } catch (e) {
+        // ตรวจสอบข้อผิดพลาดที่เกี่ยวข้องกับจำนวนผู้ติดต่อเกิน
+        String errorMessage = e.toString();
+        if (errorMessage.contains('เกินจำนวนสูงสุด 5 รายชื่อ')) {
+          errorMessage = 'ไม่สามารถเพิ่มผู้ติดต่อได้ เกินจำนวนสูงสุด 5 รายชื่อ';
+        } else {
+          errorMessage = 'ไม่สามารถเพิ่มผู้ติดต่อได้: $e';
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('ไม่สามารถเพิ่มผู้ติดต่อได้: $e'),
-            backgroundColor: Colors.redAccent,
+            content: Text(errorMessage),
+            backgroundColor: Colors.orange,
             behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -58,7 +66,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        iconTheme: const IconThemeData(color: Colors.white, size: 28),
+        iconTheme: const IconThemeData(color: Colors.white, size: 24),
         centerTitle: true,
         backgroundColor: const Color.fromRGBO(230, 70, 70, 1),
         elevation: 0,
@@ -70,8 +78,9 @@ class _AddContactScreenState extends State<AddContactScreen> {
           child: Form(
             key: _formKey,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                const SizedBox(height: 40),
                 TextFormField(
                   controller: _nameController,
                   decoration: InputDecoration(
