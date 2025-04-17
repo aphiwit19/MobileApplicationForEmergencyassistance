@@ -1,10 +1,6 @@
-import 'package:ballauto/services/contact_service.dart';
-import 'package:ballauto/services/sms_service.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ballauto/services/sos_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:ballauto/model/sos_history.dart';
 
 class SosConfirmationScreen extends StatefulWidget {
   const SosConfirmationScreen({super.key});
@@ -14,13 +10,10 @@ class SosConfirmationScreen extends StatefulWidget {
 }
 
 class _SosConfirmationScreenState extends State<SosConfirmationScreen> {
+  final SosService _sosService = SosService();
   int _countdown = 5;
   late Timer _timer;
   bool _isLoading = false;
-  final ContactService _contactService = ContactService();
-  final SmsService _smsService = SmsService();
-  final CollectionReference _userCollection =
-      FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -41,51 +34,8 @@ class _SosConfirmationScreenState extends State<SosConfirmationScreen> {
         });
 
         try {
-          final contacts = await _contactService.getContacts();
-          if (contacts.isEmpty) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('ไม่พบผู้ติดต่อ'),
-                backgroundColor: Colors.orange,
-              ),
-            );
-            Navigator.pop(context);
-            return;
-          }
-
-          // ตรวจสอบเครดิตก่อนส่ง
-          final contactCount = contacts.length;
-          final remainingCredit = await _smsService.checkCredit();
-          if (contactCount > remainingCredit) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('เครดิตไม่เพียงพอ กรุณาเติมเครดิต'),
-                backgroundColor: Colors.red,
-              ),
-            );
-            Navigator.pop(context);
-            return;
-          }
-
-          // ส่ง SMS
-          final phoneNumbers = contacts.map((contact) => contact.phone).toList();
-          const message = "สวัดดีจากแอพsos";
-          await _smsService.sendSms(phoneNumbers, message);
-
-          // บันทึกประวัติการแจ้งเหตุลง Firestore
-          final user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
-            final sosHistory = SosHistory(
-              timestamp: DateTime.now(),
-              phoneNumbers: phoneNumbers, // บันทึก List ของเบอร์
-              status: 'success',
-              message: message,
-            );
-            await _userCollection
-                .doc(user.uid)
-                .collection('sos_history')
-                .add(sosHistory.toMap());
-          }
+          // เรียกใช้ SosService เพื่อส่ง SMS และบันทึกประวัติ
+          await _sosService.sendSos();
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -94,24 +44,9 @@ class _SosConfirmationScreenState extends State<SosConfirmationScreen> {
             ),
           );
         } catch (e) {
-          // บันทึกประวัติเมื่อเกิดข้อผิดพลาด
-          final user = FirebaseAuth.instance.currentUser;
-          if (user != null) {
-            final sosHistory = SosHistory(
-              timestamp: DateTime.now(),
-              phoneNumbers: [], // ไม่มีเบอร์เมื่อล้มเหลว
-              status: 'failed',
-              message: 'สวัดดีจากแอพsos',
-            );
-            await _userCollection
-                .doc(user.uid)
-                .collection('sos_history')
-                .add(sosHistory.toMap());
-          }
-
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('เกิดข้อผิดพลาดในการส่ง SMS: $e'),
+              content: Text('เกิดข้อผิดพลาด: $e'),
               backgroundColor: Colors.red,
             ),
           );
