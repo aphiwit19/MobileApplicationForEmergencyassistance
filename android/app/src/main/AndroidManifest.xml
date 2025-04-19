@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.number1">
-
     <!-- สิทธิ์สำหรับการใช้งานอินเทอร์เน็ต -->
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -10,6 +10,12 @@
 
     <!-- สิทธิ์สำหรับการดึงตำแหน่งใน Background (ในอนาคต) -->
     <!-- <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> -->
+
+    <!-- Permission for Android 13+ to show notifications -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- สิทธิ์สำหรับรัน foreground service -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
 
     <application
         android:label="number1"
@@ -41,6 +47,12 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Foreground service สำหรับตรวจจับการล้มเบื้องหลัง -->
+        <service
+            android:name="com.pravera.flutter_foreground_task.service.ForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync"
+            tools:replace="android:foregroundServiceType"/>
     </application>
 
     <!-- Required to query activities that can process text, see:

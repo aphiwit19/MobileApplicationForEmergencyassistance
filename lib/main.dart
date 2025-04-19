@@ -7,10 +7,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'Sceen/auth/login_screen.dart';
 import 'Sceen/contact/contacts_screen.dart';
+import 'package:ballauto/config/service_initializer.dart';
+
+// Global key for showing SnackBar from any context
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await initializeServices();  // Setup Firebase, notifications, service, and fall detection
   runApp(const MyApp());
 }
 
@@ -20,6 +24,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      // กำหนด key สำหรับ ScaffoldMessenger
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {

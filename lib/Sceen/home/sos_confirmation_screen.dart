@@ -77,7 +77,7 @@ class _SosConfirmationScreenState extends State<SosConfirmationScreen> {
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 25),
               child: Text(
-                "ระบบจะแจ้งเหตุฉุกเฉินเมื่อหมดเวลานับถอยหลังหมด",
+                "ระบบจะส่งข้อความฉุกเฉินเมื่อหมดเวลานับถอยหลัง",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,

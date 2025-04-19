@@ -1,10 +1,16 @@
 import 'package:ballauto/Sceen/BottomNavigationBar/bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
-
+import 'package:ballauto/services/notification_service.dart';
 import 'sos_confirmation_screen.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +23,7 @@ class Home extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25),
               child: Text(
-                "คุณต้องการความช่วยเหลือฉุกเฉิน ใช่ไหม?",
+                "คุณต้องการความช่วยเหลือฉุกเฉิน ใช่ไหม55?",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
             ),
