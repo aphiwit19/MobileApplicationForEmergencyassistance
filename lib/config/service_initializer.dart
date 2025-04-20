@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:ballauto/services/notification_service.dart';
 import 'package:ballauto/services/fall_detection_task.dart';
 import 'package:ballauto/services/fall_detection_service.dart';
+import 'package:ballauto/services/settings_service.dart';
 import 'package:geolocator/geolocator.dart';
 
 // Removed AlertService. Use NotificationService.showFallAlert instead.
@@ -18,15 +19,24 @@ Future<void> initializeServices() async {
   // Start/stop fall detection based on user login status
   FirebaseAuth.instance.authStateChanges().listen((user) {
     if (user != null) {
-      // Start background service
-      FlutterForegroundTask.startService(
-        notificationTitle: 'Fall Detection Running',
-        notificationText: 'กำลังตรวจจับการล้มตลอดเวลา',
-        callback: startCallback,
-      );
-      // UI-level detection
-      FallDetectionService().startListening(onFallDetected: () {
-        NotificationService.startSosCountdown(seconds: 10);
+      // เช็ค setting ก่อนเริ่ม service
+      SettingsService.isFallDetectionEnabled().then((enabled) {
+        if (enabled) {
+          // Start background service
+          FlutterForegroundTask.startService(
+            notificationTitle: 'Fall Detection Running',
+            notificationText: 'กำลังตรวจจับการล้มตลอดเวลา',
+            callback: startCallback,
+          );
+          // UI-level detection
+          FallDetectionService().startListening(onFallDetected: () {
+            NotificationService.startSosCountdown(seconds: 10);
+          });
+        } else {
+          // หยุด service เมื่อผู้ใช้เลือกปิดการตรวจจับการล้ม
+          FallDetectionService().stopListening();
+          FlutterForegroundTask.stopService();
+        }
       });
     } else {
       // Stop services when logged out

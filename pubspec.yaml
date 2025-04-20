@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.1.1 # package สำหรับเก็บข้อมูลในเครื่อง
   firebase_core: ^2.27.1    # package หลักสำหรับเชื่อมต่อกับ Firebase
   firebase_auth: ^4.17.9    # package สำหรับระบบล็อกอิน
   cloud_firestore: ^4.15.9  # package สำหรับฐานข้อมูล

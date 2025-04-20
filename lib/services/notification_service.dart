@@ -5,6 +5,7 @@ import 'package:ballauto/services/sos_service.dart';
 import 'package:ballauto/main.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 
 /// Service using Flutter Local Notifications for system alerts
 class NotificationService {
@@ -99,32 +100,36 @@ class NotificationService {
   static void startSosCountdown({int seconds = 10}) {
     final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     int remaining = seconds;
-    void update() {
-      showNotification(
-        id: id,
-        title: 'Fall Detected',
-        body: 'ระบบจะแจ้งเหตุเมื่อหมดเวลานับถอยหลัง $remaining วินาที',
-      );
-      HapticFeedback.vibrate();
-    }
-    update();
-    final timer = Timer.periodic(const Duration(seconds: 1), (t) async {
+    // แสดง notification เริ่มนับถอยหลัง
+    showNotification(
+      id: id,
+      title: 'Fall Detected',
+      body: 'ระบบจะแจ้งเหตุเมื่อหมดเวลานับถอยหลัง $remaining วินาที',
+    );
+    HapticFeedback.vibrate();
+    // นับถอยหลังทุกวินาที
+    final timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
       remaining--;
-      if (remaining <= 0) {
-        t.cancel();
-        _countdownTimers.remove(id);
-        try {
-          await SosService().sendSos();
-          await showNotification(
-            id: id,
-            title: 'ส่ง SOS อัตโนมัติ',
-            body: 'ไม่มีการยกเลิก จึงส่ง SOS อัตโนมัติ',
-          );
-        } catch (e) {
-          debugPrint('Auto SOS error: $e');
-        }
+      if (remaining > 0) {
+        await showNotification(
+          id: id,
+          title: 'Fall Detected',
+          body: 'ระบบจะแจ้งเหตุเมื่อหมดเวลานับถอยหลัง $remaining วินาที',
+        );
+        HapticFeedback.vibrate();
       } else {
-        update();
+        timer.cancel();
+        _countdownTimers.remove(id);
+        // ยกเลิก notification เก่าเพื่อรีเฟรชเนื้อหา
+        await _notifications.cancel(id);
+        // แสดง notification สรุปการส่ง
+        await showNotification(
+          id: id,
+          title: 'ส่ง SOS อัตโนมัติ',
+          body: 'ไม่มีการยกเลิก จึงส่ง SOS อัตโนมัติ',
+        );
+        // สั่งส่ง SOS ใน background โดยไม่รอผล
+        unawaited(SosService().sendSos());
       }
     });
     _countdownTimers[id] = timer;

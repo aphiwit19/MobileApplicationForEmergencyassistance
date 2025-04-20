@@ -4,6 +4,7 @@ import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:ballauto/services/notification_service.dart';
+import 'package:ballauto/services/settings_service.dart';
 
 /// ฟังก์ชัน callback เริ่มต้นสำหรับ foreground service
 void startCallback() {
@@ -30,6 +31,9 @@ class FallDetectionTaskHandler extends TaskHandler {
 
   /// ฟังก์ชันตรวจจับการล้มจากค่าเซ็นเซอร์
   Future<void> _detectFall(double x, double y, double z) async {
+    // อ่าน setting ก่อนดำเนินการตรวจจับ
+    final enabled = await SettingsService.isFallDetectionEnabled();
+    if (!enabled) return;
     final g = (x.abs() + y.abs() + z.abs()) / 9.81;
     debugPrint('FallDetectionTask: g=$g');
     if (g > 2.5) {
@@ -40,6 +44,10 @@ class FallDetectionTaskHandler extends TaskHandler {
         body: 'ตรวจพบการล้ม!',
       );
       debugPrint('Fall notification sent');
+      // เริ่มนับถอยหลังแจ้งเหตุอัตโนมัติหากผู้ใช้เปิดฟีเจอร์
+      if (enabled) {
+        NotificationService.startSosCountdown(seconds: 10);
+      }
     }
   }
 

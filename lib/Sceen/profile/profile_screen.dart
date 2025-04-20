@@ -4,6 +4,11 @@ import 'package:ballauto/model/user_profile.dart';
 import 'package:ballauto/services/user_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ballauto/services/settings_service.dart';
+import 'package:ballauto/services/fall_detection_service.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:ballauto/services/fall_detection_task.dart';
+import 'package:ballauto/services/notification_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -24,6 +29,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       debugPrint('ข้อผิดพลาดในการดึงข้อมูล: $e');
     }
     return null;
+  }
+
+  bool _isFallEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSetting();
+  }
+
+  Future<void> _loadSetting() async {
+    final enabled = await SettingsService.isFallDetectionEnabled();
+    setState(() {
+      _isFallEnabled = enabled;
+    });
   }
 
   @override
@@ -69,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       child: Padding(
                         padding: const EdgeInsets.all(16),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -194,25 +214,55 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/history_sos');
-                      },
-                      icon: const Icon(Icons.history, color: Colors.white),
-                      label: const Text(
-                        'ประวัติการแจ้งเหตุ',
-                        style: TextStyle(color: Colors.white),
+                    const SizedBox(height: 10),
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(230, 70, 70, 1),
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 14,
-                          horizontal: 24,
+                      elevation: 4,
+                      child: SwitchListTile(
+                        activeColor: Colors.redAccent,
+                        activeTrackColor: Colors.redAccent.withOpacity(0.4),
+                        title: const Text('ตรวจจับการล้ม',style: TextStyle(fontWeight: FontWeight.w600)),
+                        value: _isFallEnabled,
+                        onChanged: (value) async {
+                          await SettingsService.setFallDetectionEnabled(value);
+                          setState(() {
+                            _isFallEnabled = value;
+                          });
+                          if (value) {
+                            FlutterForegroundTask.startService(
+                              notificationTitle: 'Fall Detection Running',
+                              notificationText: 'กำลังตรวจจับการล้มตลอดเวลา',
+                              callback: startCallback,
+                            );
+                            FallDetectionService().startListening(onFallDetected: () {
+                              NotificationService.startSosCountdown(seconds: 10);
+                            });
+                          } else {
+                            FallDetectionService().stopListening();
+                            FlutterForegroundTask.stopService();
+                          }
+                        },
+                        secondary: const Icon(Icons.settings, color: Colors.redAccent),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Card(
+                      color: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 4,
+                      child: ListTile(
+                        leading: const Icon(Icons.history, color: Colors.redAccent),
+                        title: const Text(
+                          'ประวัติการแจ้งเหตุ',
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
+                        
+                        onTap: () => Navigator.pushNamed(context, '/history_sos'),
                       ),
                     ),
                     const SizedBox(height: 20),
