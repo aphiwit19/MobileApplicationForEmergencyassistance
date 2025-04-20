@@ -12,7 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.8
+  cupertino_icons: ^1.0.8 # เพิ่มแพ็กเกจสำหรับไอคอน
   shared_preferences: ^2.1.1 # package สำหรับเก็บข้อมูลในเครื่อง
   firebase_core: ^2.27.1    # package หลักสำหรับเชื่อมต่อกับ Firebase
   firebase_auth: ^4.17.9    # package สำหรับระบบล็อกอิน
@@ -26,6 +26,7 @@ dependencies:
   sensors_plus: ^6.1.1  # เพิ่มแพ็กเกจสำหรับอ่านค่า accelerometer and gyroscope
   flutter_local_notifications: ^19.1.0  # อัปเดตเป็นเวอร์ชันล่าสุดพร้อม linux support
   flutter_foreground_task: ^6.0.0  # รัน foreground service ดักจับการล้มแม้แอพเบื้องหลัง
+  url_launcher: ^6.1.7 # เพิ่มแพ็กเกจสำหรับการเรียกเปิดไปที่อื่น
 
 dev_dependencies:
   flutter_test:

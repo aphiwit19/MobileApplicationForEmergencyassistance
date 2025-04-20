@@ -16,6 +16,7 @@ class EmergencyNumberService {
 
   // อัปโหลดข้อมูลเบอร์โทรฉุกเฉิน
   Future<void> addEmergencyNumber(EmergencyNumberModel number) async {
-    await _collection.add(number.toMap());
+    final id = number.name.replaceAll('/', '-');
+    await _collection.doc(id).set(number.toMap());
   }
 }

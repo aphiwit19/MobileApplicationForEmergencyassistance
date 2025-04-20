@@ -7,10 +7,10 @@ Future<void> seedEmergencyNumbers() async {
   final collection = FirebaseFirestore.instance.collection('emergency_numbers');
 
   // ลบข้อมูลโครงสร้างเดิมทั้งหมด
-  final existing = await collection.get();
-  for (var doc in existing.docs) {
-    await doc.reference.delete();
-  }
+  // final existing = await collection.get();
+  // for (var doc in existing.docs) {
+  //   await doc.reference.delete();
+  // }
 
   // ข้อมูลเบอร์โทรฉุกเฉินที่ต้องการ seed
   final numbers = [
@@ -179,9 +179,9 @@ Future<void> seedEmergencyNumbers() async {
     ),
   ];
 
-  // อัปโหลดข้อมูลไปยัง Firebase
-  for (var number in numbers) {
-    await collection.doc(number.name).set(number.toMap());
+  // อัปโหลดข้อมูลโดยใช้ service เพื่อให้ใช้ชื่อเป็น document ID
+  for (var n in numbers) {
+    await service.addEmergencyNumber(n);
   }
 
   print('Seed ข้อมูลเบอร์โทรฉุกเฉินเรียบร้อยแล้ว!');

@@ -3,6 +3,7 @@ import 'package:ballauto/Sceen/menu/menu_screen.dart';
 import 'package:ballauto/Sceen/profile/profile_screen.dart';
 import 'package:ballauto/Sceen/profile/history_sos_screen.dart';
 import 'package:ballauto/scripts/seed_emergency_numbers.dart';
+import 'package:ballauto/scripts/seed_first_aid.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,6 +19,8 @@ void main() async {
   await initializeServices();  // Setup Firebase, notifications, service, and fall detection
 
   await seedEmergencyNumbers(); // Seed emergency numbers into Firestore (optional) //ไม่ใช้ awiat เพราะต้องรอการโหลด ทำให้รันค้าง
+
+  await seedFirstAidData(); // Seed first aid data into Firestore (optional)
   runApp(const MyApp());
 }
 

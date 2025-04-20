@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class NumberScreen extends StatelessWidget {
   const NumberScreen({super.key});
@@ -38,6 +39,11 @@ class NumberScreen extends StatelessWidget {
                 leading: const Icon(Icons.phone),
                 title: Text('${data['name']}: ${data['number']}'),
                 subtitle: Text(data['category']),
+                onTap: () async {
+                  final uri = Uri(scheme: 'tel', path: data['number']);
+                  // เปิด dialer ให้ผู้ใช้ตัดสินใจโทรเอง
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                },
               );
             },
           );
