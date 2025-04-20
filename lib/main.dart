@@ -2,6 +2,7 @@ import 'package:ballauto/Sceen/home/home.dart';
 import 'package:ballauto/Sceen/menu/menu_screen.dart';
 import 'package:ballauto/Sceen/profile/profile_screen.dart';
 import 'package:ballauto/Sceen/profile/history_sos_screen.dart';
+import 'package:ballauto/scripts/seed_emergency_numbers.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -15,6 +16,8 @@ final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey = GlobalKey<Sca
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeServices();  // Setup Firebase, notifications, service, and fall detection
+
+  await seedEmergencyNumbers(); // Seed emergency numbers into Firestore (optional) //ไม่ใช้ awiat เพราะต้องรอการโหลด ทำให้รันค้าง
   runApp(const MyApp());
 }
 
