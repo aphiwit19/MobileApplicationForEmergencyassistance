@@ -1,6 +1,7 @@
 import 'package:ballauto/Sceen/menu/firstaid_screen.dart';
 import 'package:ballauto/Sceen/menu/location_screen.dart';
 import 'package:ballauto/Sceen/menu/number_screen.dart';
+import 'package:ballauto/Sceen/menu/emergency_guide_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:ballauto/Sceen/BottomNavigationBar/bottom_navigation_bar.dart';
 
@@ -54,6 +55,16 @@ class MenuScreen extends StatelessWidget {
               );
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.menu_book),
+            title: const Text('คู่มือสถานการณ์ฉุกเฉิน'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const EmergencyGuideScreen()),
+              );
+            },
+          ),
         ],
       ),
       bottomNavigationBar: CustomBottomNavigationBar(
@@ -63,4 +74,3 @@ class MenuScreen extends StatelessWidget {
     );
   }
 }
-

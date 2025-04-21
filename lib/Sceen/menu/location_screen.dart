@@ -41,8 +41,14 @@ class _LocationScreenState extends State<LocationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('บริการฉุกเฉิน'),
-        backgroundColor: const Color.fromRGBO(230, 70, 70, 1),
+        title: const Text(
+          'บริการฉุกเฉิน',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: Color.fromRGBO(230, 70, 70, 1),
+        elevation: 0,
+        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [

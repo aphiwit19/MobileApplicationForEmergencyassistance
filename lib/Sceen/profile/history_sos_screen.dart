@@ -27,15 +27,12 @@ class HistorySosScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'ประวัติการแจ้งเหตุ',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(230, 70, 70, 1),
+        backgroundColor: Color.fromRGBO(230, 70, 70, 1),
         elevation: 0,
+        foregroundColor: Colors.white,
       ),
       backgroundColor: Colors.grey[200],
       body: StreamBuilder<QuerySnapshot>(
@@ -118,10 +115,7 @@ class HistorySosScreen extends StatelessWidget {
           );
         },
       ),
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: 3,
-        onTap: (index) {},
-      ),
+
     );
   }
 }
