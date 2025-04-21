@@ -13,6 +13,8 @@ class _LocationScreenState extends State<LocationScreen> {
   final LocationService _locationService = LocationService();
   List<LocationWithDistance> _locationsWithDistance = [];
   bool _isLoading = false;
+  int _radiusKm = 5;
+  String _selectedType = 'hospital';
 
   @override
   void initState() {
@@ -21,9 +23,12 @@ class _LocationScreenState extends State<LocationScreen> {
   }
 
   Future<void> _fetchLocations(String type) async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _selectedType = type;
+    });
     try {
-      final list = await _locationService.fetchNearbyWithDistance(type);
+      final list = await _locationService.fetchNearbyWithDistance(type, _radiusKm);
       setState(() => _locationsWithDistance = list);
     } catch (e) {
       print('Error fetching locations: $e');
@@ -62,6 +67,33 @@ class _LocationScreenState extends State<LocationScreen> {
                 ElevatedButton(
                   onPressed: () => _fetchLocations('doctor'),
                   child: const Text('คลินิก'),
+                ),
+              ],
+            ),
+          ),
+          // ปุ่มปรับรัศมีค้นหา ทีละ 5 กม.
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline),
+                  onPressed: _radiusKm > 5
+                      ? () {
+                          setState(() => _radiusKm -= 5);
+                          _fetchLocations(_selectedType);
+                        }
+                      : null,
+                ),
+                Text('รัศมี: $_radiusKm กม.'),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  onPressed: _radiusKm < 50
+                      ? () {
+                          setState(() => _radiusKm += 5);
+                          _fetchLocations(_selectedType);
+                        }
+                      : null,
                 ),
               ],
             ),

@@ -12,11 +12,11 @@ class LocationWithDistance {
 }
 
 class LocationService {
-  final String apiKey = 'AIzaSyAjQbfLaPaYhWF0p_zcnNLGG_Wg5vVpdPQ'; // ใส่ API Key ของคุณที่นี่
+  final String apiKey = 'AIzaSyAjQbfLaPaYhWF0p_zcnNLGG_Wg5vVpdPQ'; //  API Key google ของคุณที่นี่
 
-  Future<List<LocationModel>> fetchLocations(String type, double lat, double lng) async {
+  Future<List<LocationModel>> fetchLocations(String type, double lat, double lng, int radius) async {
     final url =
-        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=5000&type=$type&key=$apiKey';
+        'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=$lat,$lng&radius=$radius&type=$type&key=$apiKey';
 
     final response = await http.get(Uri.parse(url));
 
@@ -69,9 +69,9 @@ class LocationService {
   }
 
   /// ดึงสถานบริการพร้อมคำนวณระยะทางและเบอร์โทรศัพท์
-  Future<List<LocationWithDistance>> fetchNearbyWithDistance(String type) async {
+  Future<List<LocationWithDistance>> fetchNearbyWithDistance(String type, int radiusKm) async {
     final pos = await getCurrentLocation();
-    final places = await fetchLocations(type, pos.latitude, pos.longitude);
+    final places = await fetchLocations(type, pos.latitude, pos.longitude, radiusKm * 1000);
     final results = <LocationWithDistance>[];
     for (var place in places) {
       String? phone;
@@ -91,6 +91,8 @@ class LocationService {
       final d = calculateDistanceInKm(pos.latitude, pos.longitude, place.latitude, place.longitude);
       results.add(LocationWithDistance(place: updatedPlace, distanceKm: d));
     }
+    // เรียงตามระยะทาง (ใกล้ที่สุดก่อน)
+    results.sort((a, b) => a.distanceKm.compareTo(b.distanceKm));
     return results;
   }
 
