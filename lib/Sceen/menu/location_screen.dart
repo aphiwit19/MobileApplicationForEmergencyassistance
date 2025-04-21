@@ -1,5 +1,6 @@
 import 'package:ballauto/services/location_service.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -82,7 +83,17 @@ class _LocationScreenState extends State<LocationScreen> {
                               children: [
                                 Text(item.place.address),
                                 Text('ระยะทาง ${item.distanceKm.toStringAsFixed(2)} กม.'),
+                                if (item.place.phoneNumber != null) Text('โทร: ${item.place.phoneNumber}'),
                               ],
+                            ),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.map),
+                              onPressed: () {
+                                final lat = item.place.latitude;
+                                final lng = item.place.longitude;
+                                final uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+                                launchUrl(uri, mode: LaunchMode.externalApplication);
+                              },
                             ),
                           );
                         },
