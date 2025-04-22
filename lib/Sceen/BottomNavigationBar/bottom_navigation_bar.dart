@@ -28,6 +28,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,        // บังคับให้ใช้สีพื้นหลังของบาร์
+      backgroundColor: Colors.white,             // สีพื้นหลังตั้งเป็นสีส้ม
       currentIndex: currentIndex,
       onTap: (index) {
         onTap(index); // เรียก onTap ที่ส่งเข้ามา
@@ -36,6 +38,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
       selectedItemColor: Colors.redAccent,
       unselectedItemColor: Colors.grey,
       items: const [
+        
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'หน้าแรก',

@@ -11,7 +11,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,11 +19,16 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            SizedBox(height: 40),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.only(left: 20.0),
               child: Text(
-                "คุณต้องการความช่วยเหลือฉุกเฉิน ใช่ไหม55?",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                "ต้องการขอความช่วยเหลือ หรือไม่?",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ),
             SizedBox(height: 80),
@@ -46,6 +50,19 @@ class _HomeState extends State<Home> {
                     decoration: BoxDecoration(
                       color: Color.fromRGBO(255, 216, 215, 1),
                       shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Color(
+                            0xFFE64646,
+                          ).withOpacity(0.3), // สีของหมอก (เงา)
+                          blurRadius: 20, // ความเบลอของหมอก
+                          spreadRadius: 5, // การกระจายของหมอก
+                          offset: Offset(
+                            0,
+                            10,
+                          ), // ตำแหน่งของหมอก (0, 0 = รอบวงกลม)
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -75,15 +92,17 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-            SizedBox(height: 80),
+            SizedBox(height: 100),
             Text(
               "กดปุ่ม SOS เพื่อขอความช่วยเหลือ",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
           ],
+          
         ),
       ),
+      
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: 0, // Home อยู่ที่ index 0
         onTap: (index) {}, // ไม่ต้องทำอะไรเพิ่ม เพราะ _navigateToPage จัดการให้
