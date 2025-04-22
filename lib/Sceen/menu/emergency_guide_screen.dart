@@ -9,13 +9,14 @@ class EmergencyGuideScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final service = EmergencyGuideService();
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text(
           'คู่มือสถานการณ์ฉุกเฉิน',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        backgroundColor: const Color.fromRGBO(230, 70, 70, 1),
+        backgroundColor: Color.fromRGBO(230, 70, 70, 1),
         elevation: 0,
         foregroundColor: Colors.white,
       ),
@@ -30,12 +31,79 @@ class EmergencyGuideScreen extends StatelessWidget {
           }
           final guides = snapshot.data!;
           return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
             itemCount: guides.length,
             itemBuilder: (context, index) {
               final guide = guides[index];
-              return ListTile(
-                title: Text(guide.title),
-                subtitle: Text(guide.description),
+              return SizedBox(
+                height: 90, // กำหนดความสูงของกล่อง
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 4,
+                  child: ListTile(
+                    leading: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.deepPurpleAccent.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.menu_book,
+                        color: Colors.deepPurpleAccent,
+                      ),
+                    ),
+                    title: Text(
+                      guide.title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    subtitle: const Text(
+                      'แตะเพื่อดูรายละเอียด',
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                    ),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            title: Text(
+                              guide.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            content: Text(
+                              guide.description,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text(
+                                  'ปิด',
+                                  style: TextStyle(
+                                    color: Colors.deepPurpleAccent,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
               );
             },
           );
