@@ -30,23 +30,32 @@ class NumberScreen extends StatelessWidget {
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return const Center(child: Text('ไม่มีข้อมูลเบอร์โทรฉุกเฉิน'));
           }
-          final numbers = snapshot.data!.docs;
-          return ListView.builder(
-            itemCount: numbers.length,
-            itemBuilder: (context, index) {
-              final data = numbers[index].data() as Map<String, dynamic>;
-              return ListTile(
+          final docs = snapshot.data!.docs;
+          final Map<String, List<Map<String, dynamic>>> grouped = {};
+          for (var doc in docs) {
+            final data = doc.data() as Map<String, dynamic>;
+            final category = data['category'] as String;
+            grouped.putIfAbsent(category, () => []).add(data);
+          }
+          final List<Widget> items = [];
+          grouped.forEach((category, list) {
+            items.add(Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(category, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ));
+            for (var data in list) {
+              items.add(ListTile(
                 leading: const Icon(Icons.phone),
-                title: Text('${data['name']}: ${data['number']}'),
+                title: Text("${data['name']}: ${data['number']}"),
                 subtitle: Text(data['category']),
                 onTap: () async {
                   final uri = Uri(scheme: 'tel', path: data['number']);
-                  // เปิด dialer ให้ผู้ใช้ตัดสินใจโทรเอง
                   await launchUrl(uri, mode: LaunchMode.externalApplication);
                 },
-              );
-            },
-          );
+              ));
+            }
+          });
+          return ListView(children: items);
         },
       ),
     );
