@@ -65,7 +65,8 @@ class NotificationService {
       await showNotification(
         id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         title: 'กำลังส่ง SOS...',
-        body: 'กำลังส่งข้อความแจ้งเหตุ...'
+        body: 'กำลังส่งข้อความแจ้งเหตุ...',
+        includeActions: false,
       );
       try {
         await SosService().sendSos();
@@ -74,7 +75,8 @@ class NotificationService {
         await showNotification(
           id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
           title: 'ส่ง SOS สำเร็จ',
-          body: 'ข้อความแจ้งเหตุถูกส่งเรียบร้อย'
+          body: 'ข้อความแจ้งเหตุถูกส่งเรียบร้อย',
+          includeActions: false,
         );
       } catch (e) {
         debugPrint('Error sending SOS: $e');
@@ -82,7 +84,8 @@ class NotificationService {
         await showNotification(
           id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
           title: 'ส่ง SOS ล้มเหลว',
-          body: 'ไม่สามารถส่งข้อความแจ้งเหตุ'
+          body: 'ไม่สามารถส่งข้อความแจ้งเหตุ',
+          includeActions: false,
         );
       }
     } else if (response.actionId == 'cancel') {
@@ -91,7 +94,8 @@ class NotificationService {
       await showNotification(
         id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         title: 'ยกเลิกสำเร็จ',
-        body: 'คุณได้ยกเลิกการแจ้งเหตุ'
+        body: 'คุณได้ยกเลิกการแจ้งเหตุ',
+        includeActions: false,
       );
     }
   }
@@ -127,6 +131,7 @@ class NotificationService {
           id: id,
           title: 'ส่ง SOS อัตโนมัติ',
           body: 'ไม่มีการยกเลิก จึงส่ง SOS อัตโนมัติ',
+          includeActions: false,
         );
         // สั่งส่ง SOS ใน background โดยไม่รอผล
         unawaited(SosService().sendSos());
@@ -140,20 +145,29 @@ class NotificationService {
     required int id,
     required String title,
     required String body,
+    bool includeActions = true,
   }) async {
-    const androidDetails = AndroidNotificationDetails(
-      'fall_channel',
-      'Fall Detection',
-      channelDescription: 'Channel for fall detection alerts',
-      importance: Importance.max,
-      priority: Priority.high,
-      actions: <AndroidNotificationAction>[
-        AndroidNotificationAction('confirm', 'ยืนยัน', showsUserInterface: true, cancelNotification: true),
-        AndroidNotificationAction('cancel', 'ยกเลิก', showsUserInterface: true, cancelNotification: true),
-      ],
-    );
+    final androidDetails = includeActions
+        ? AndroidNotificationDetails(
+            'fall_channel',
+            'Fall Detection',
+            channelDescription: 'Channel for fall detection alerts',
+            importance: Importance.max,
+            priority: Priority.high,
+            actions: <AndroidNotificationAction>[
+              AndroidNotificationAction('confirm', 'ยืนยัน', showsUserInterface: true, cancelNotification: true),
+              AndroidNotificationAction('cancel', 'ยกเลิก', showsUserInterface: true, cancelNotification: true),
+            ],
+          )
+        : AndroidNotificationDetails(
+            'fall_channel',
+            'Fall Detection',
+            channelDescription: 'Channel for fall detection alerts',
+            importance: Importance.max,
+            priority: Priority.high,
+          );
     const iosDetails = DarwinNotificationDetails();
-    const details = NotificationDetails(android: androidDetails, iOS: iosDetails);
+    final details = NotificationDetails(android: androidDetails, iOS: iosDetails);
     await _notifications.show(id, title, body, details);
   }
 
