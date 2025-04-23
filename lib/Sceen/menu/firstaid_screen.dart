@@ -75,6 +75,7 @@ class FirstAidScreen extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            backgroundColor: Colors.white,
                             title: Text(
                               firstAid.title,
                               style: const TextStyle(

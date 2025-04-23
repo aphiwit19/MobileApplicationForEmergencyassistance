@@ -74,6 +74,8 @@ class EmergencyGuideScreen extends StatelessWidget {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
+                            backgroundColor: Colors.white,
+
                             title: Text(
                               guide.title,
                               style: const TextStyle(

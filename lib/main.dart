@@ -19,9 +19,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeServices();  // Setup Firebase, notifications, service, and fall detection
 
-  await seedEmergencyNumbers(); // Seed emergency numbers into Firestore (optional) //ไม่ใช้ awiat เพราะต้องรอการโหลด ทำให้รันค้าง
-  await seedFirstAidData(); // Seed first aid data into Firestore (optional)
-  await seedEmergencyGuides(); // Seed emergency guides into Firestore (optional)
+  // await seedEmergencyNumbers(); // Seed emergency numbers into Firestore (optional) //ไม่ใช้ awiat เพราะต้องรอการโหลด ทำให้รันค้าง
+  // await seedFirstAidData(); // Seed first aid data into Firestore (optional)
+  // await seedEmergencyGuides(); // Seed emergency guides into Firestore (optional)
   runApp(const MyApp());
 }
 

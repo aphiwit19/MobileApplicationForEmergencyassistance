@@ -33,10 +33,21 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.6
 
+flutter_icons: # เพิ่มส่วนนี้เพื่อให้สามารถสร้างไอคอนได้
+  android: true
+  ios: true
+  image_path: "assets/icons/app_icon.png"
 
+flutter_native_splash: # เพิ่มส่วนนี้เพื่อสร้าง splash
+  color: "#FFFFFF"
+  image: "assets/icons/app_icon.png"
+  android: true
 
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/icons/app_icon.png
