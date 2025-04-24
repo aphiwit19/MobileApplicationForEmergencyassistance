@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:math';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter/foundation.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -16,38 +17,40 @@ void startCallback() {
 class FallDetectionTaskHandler extends TaskHandler {
   StreamSubscription<AccelerometerEvent>? _accSub;
   StreamSubscription<GyroscopeEvent>? _gyrSub;
+  double _lastAccMag = 0.0;
+  double _lastGyroMag = 0.0;
+  DateTime? _lastFallTime;
+  final double thresholdG = 5.0;
+  final double thresholdGyro = 2.0;
+  final Duration cooldown = const Duration(minutes: 1);
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
-    // เริ่มฟังค่า accelerometer
-    _accSub = accelerometerEvents.listen((event) async {
-      await _detectFall(event.x, event.y, event.z);
+    _accSub = accelerometerEvents.listen((event) {
+      _lastAccMag = sqrt(event.x * event.x + event.y * event.y + event.z * event.z) / 9.81;
+      _tryDetect();
     });
-    // เริ่มฟังค่า gyroscope
-    _gyrSub = gyroscopeEvents.listen((event) async {
-      await _detectFall(event.x, event.y, event.z);
+    _gyrSub = gyroscopeEvents.listen((event) {
+      _lastGyroMag = sqrt(event.x * event.x + event.y * event.y + event.z * event.z);
+      _tryDetect();
     });
   }
 
   /// ฟังก์ชันตรวจจับการล้มจากค่าเซ็นเซอร์
-  Future<void> _detectFall(double x, double y, double z) async {
-    // อ่าน setting ก่อนดำเนินการตรวจจับ
+  Future<void> _tryDetect() async {
     final enabled = await SettingsService.isFallDetectionEnabled();
     if (!enabled) return;
-    final g = (x.abs() + y.abs() + z.abs()) / 9.81;
-    debugPrint('FallDetectionTask: g=$g');
-    if (g > 2.5) {
-      // แสดง notification เมื่อตรวจจับการล้ม
+    final now = DateTime.now();
+    if (_lastAccMag >= thresholdG &&
+        _lastGyroMag >= thresholdGyro &&
+        (_lastFallTime == null || now.difference(_lastFallTime!) >= cooldown)) {
+      _lastFallTime = now;
       await NotificationService.showNotification(
         id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
         title: 'Fall Detected',
         body: 'ตรวจพบการล้ม!',
       );
-      debugPrint('Fall notification sent');
-      // เริ่มนับถอยหลังแจ้งเหตุอัตโนมัติหากผู้ใช้เปิดฟีเจอร์
-      if (enabled) {
-        NotificationService.startSosCountdown(seconds: 10);
-      }
+      NotificationService.startSosCountdown(seconds: 10);
     }
   }
 
