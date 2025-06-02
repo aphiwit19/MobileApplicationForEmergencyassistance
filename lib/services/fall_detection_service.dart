@@ -16,11 +16,15 @@ class FallDetectionService {
   final double thresholdG = 5;
   final double thresholdGyro = 2.0;
   final Duration cooldown = const Duration(minutes: 1);
+  final double staticThreshold = 0.1; // ค่าความเร่งที่ถือว่าหยุดนิ่ง
+  final Duration staticCheckDuration = const Duration(seconds: 5); // เวลาเช็คการหยุดนิ่ง
+
   StreamSubscription<AccelerometerEvent>? _accSubscription;
   StreamSubscription<GyroscopeEvent>? _gyrSubscription;
   double _lastAccMag = 0.0;
   double _lastGyroMag = 0.0;
   DateTime? _lastFallTime;
+  Timer? _staticCheckTimer;
 
   /// Start listening to accelerometer and gyroscope and trigger [onFallDetected] when a fall occurs.
   void startListening({required FallDetectedCallback onFallDetected}) {
@@ -40,16 +44,32 @@ class FallDetectionService {
         _lastGyroMag >= thresholdGyro &&
         (_lastFallTime == null || now.difference(_lastFallTime!) >= cooldown)) {
       _lastFallTime = now;
-      onFallDetected();
+      // เริ่มเช็คการหยุดนิ่ง
+      _startStaticCheck(onFallDetected);
     }
+  }
+
+  void _startStaticCheck(FallDetectedCallback onFallDetected) {
+    // ยกเลิก timer เก่าถ้ามี
+    _staticCheckTimer?.cancel();
+    
+    // เริ่ม timer ใหม่
+    _staticCheckTimer = Timer(staticCheckDuration, () {
+      // เช็คว่าหยุดนิ่งหรือไม่
+      if ((_lastAccMag - 1.0).abs() < staticThreshold) {
+        onFallDetected();
+      }
+    });
   }
 
   /// Stop listening and reset detection state.
   void stopListening() {
     _accSubscription?.cancel();
     _gyrSubscription?.cancel();
+    _staticCheckTimer?.cancel();
     _accSubscription = null;
     _gyrSubscription = null;
+    _staticCheckTimer = null;
     _lastAccMag = 0.0;
     _lastGyroMag = 0.0;
     _lastFallTime = null;

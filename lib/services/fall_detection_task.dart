@@ -23,6 +23,9 @@ class FallDetectionTaskHandler extends TaskHandler {
   final double thresholdG = 5.0;
   final double thresholdGyro = 2.0;
   final Duration cooldown = const Duration(minutes: 1);
+  final double staticThreshold = 0.1; // ค่าความเร่งที่ถือว่าหยุดนิ่ง
+  final Duration staticCheckDuration = const Duration(seconds: 5); // เวลาเช็คการหยุดนิ่ง
+  Timer? _staticCheckTimer;
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
@@ -45,13 +48,27 @@ class FallDetectionTaskHandler extends TaskHandler {
         _lastGyroMag >= thresholdGyro &&
         (_lastFallTime == null || now.difference(_lastFallTime!) >= cooldown)) {
       _lastFallTime = now;
-      await NotificationService.showNotification(
-        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-        title: 'Fall Detected',
-        body: 'ตรวจพบการล้ม!',
-      );
-      NotificationService.startSosCountdown(seconds: 10);
+      // เริ่มเช็คการหยุดนิ่ง
+      _startStaticCheck();
     }
+  }
+
+  void _startStaticCheck() {
+    // ยกเลิก timer เก่าถ้ามี
+    _staticCheckTimer?.cancel();
+    
+    // เริ่ม timer ใหม่
+    _staticCheckTimer = Timer(staticCheckDuration, () async {
+      // เช็คว่าหยุดนิ่งหรือไม่
+      if ((_lastAccMag - 1.0).abs() < staticThreshold) {
+        await NotificationService.showNotification(
+          id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          title: 'Fall Detected',
+          body: 'ตรวจพบการล้ม!',
+        );
+        NotificationService.startSosCountdown(seconds: 10);
+      }
+    });
   }
 
   @override
@@ -64,6 +81,7 @@ class FallDetectionTaskHandler extends TaskHandler {
     // ยกเลิกการฟังเซ็นเซอร์เมื่อ service หยุดทำงาน
     await _accSub?.cancel();
     await _gyrSub?.cancel();
+    _staticCheckTimer?.cancel();
   }
 
   @override
