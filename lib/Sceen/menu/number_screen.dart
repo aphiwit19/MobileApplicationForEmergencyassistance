@@ -72,19 +72,14 @@ class NumberScreen extends StatelessWidget {
     Map<String, List<Map<String, dynamic>>> grouped,
   ) {
     final List<Widget> items = [];
-    // จัดเรียงหมวดหมู่ตามลำดับที่กำหนด
-    final orderedCategories = [
-      'แจ้งเหตุด่วนเหตุร้าย',
-      'การแพทย์และโรงพยาบาล',
-      'หน่วยงานและองค์กรทั่วไป',
-      'การท่องเที่ยว',
-    ];
-    final keys = [
-      ...orderedCategories.where((k) => grouped.containsKey(k)),
-      ...grouped.keys.where((k) => !orderedCategories.contains(k)),
-    ];
+    // จัดเรียงหมวดหมู่แบบไดนามิกตามตัวอักษร
+    final keys = grouped.keys.toList()..sort((a, b) => a.compareTo(b));
     for (var category in keys) {
-      final list = grouped[category]!;
+      final list = [...grouped[category]!]..sort((a, b) {
+        final an = (a['name'] ?? '').toString();
+        final bn = (b['name'] ?? '').toString();
+        return an.compareTo(bn);
+      });
       // เพิ่มชื่อหมวดหมู่
       items.add(
         Container(
@@ -92,7 +87,7 @@ class NumberScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
           decoration: BoxDecoration(
-            color: _getCategoryColor(category),
+            color: _getDeterministicCategoryColor(category),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(
@@ -134,19 +129,32 @@ class NumberScreen extends StatelessWidget {
     return items;
   }
 
-   // ฟังก์ชันกำหนดสีพื้นหลังตามหมวดหมู่
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'การแพทย์และโรงพยาบาล':
-        return Colors.blueAccent;
-      case 'แจ้งเหตุด่วนเหตุร้าย':
-        return Colors.redAccent;
-      case 'หน่วยงานและองค์กรทั่วไป':
-        return Colors.orangeAccent;
-      case 'การท่องเที่ยว':
-        return Colors.green;
-      default:
-        return Colors.grey;
+  // ฟังก์ชันกำหนดสีตามชื่อหมวดแบบ deterministic (หมวดเดียวกันได้สีเดิมเสมอ)
+  Color _getDeterministicCategoryColor(String category) {
+    final palette = <Color>[
+      Colors.red,      // แดง
+      Colors.blue,     // น้ำเงิน
+      Colors.green,    // เขียว
+      Colors.orange,   // ส้ม
+      Colors.purple,   // ม่วง
+      Colors.pink,     // ชมพู
+      Colors.cyan,     // ฟ้า
+    ];
+
+    final hash = _fnv1aHash(category);
+    final index = hash % palette.length;
+    return palette[index];
+  }
+
+  // FNV-1a 32-bit hash เพื่อความคงที่ข้ามอุปกรณ์/รีสตาร์ท
+  int _fnv1aHash(String input) {
+    const int fnvPrime = 0x01000193; // 16777619
+    const int offsetBasis = 0x811C9DC5; // 2166136261
+    int hash = offsetBasis;
+    for (int i = 0; i < input.length; i++) {
+      hash ^= input.codeUnitAt(i);
+      hash = (hash * fnvPrime) & 0xFFFFFFFF;
     }
+    return hash;
   }
 }
